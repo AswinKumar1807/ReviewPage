@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #333;
+        }
+        .sentence {
+            background: #fff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .sentence p {
+            margin: 0;
+            flex-grow: 1;
+        }
+        .sentence button {
+            background: #6200ea;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background 0.3s ease;
+        }
+        .sentence button:hover {
+            background: #3700b3;
+        }
+        .buttons {
+            margin-top: 20px;
+        }
+        .buttons button {
+            background: #03dac6;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .buttons button:hover {
+            background: #018786;
+        }
+    </style>
+</head>
+<body>
+    <h1>Review Page</h1>
+    <div class="sentence">
+        <p id="sentence1">This is the first sentence.</p>
+        <button onclick="copyText('sentence1', this)">Copy</button>
+    </div>
+    <div class="sentence">
+        <p id="sentence2">This is the second sentence.</p>
+        <button onclick="copyText('sentence2', this)">Copy</button>
+    </div>
+    <!-- Add more sentences as needed -->
+
+    <div class="buttons">
+        <button onclick="goToNextPage()">Next</button>
+    </div>
+
+    <script>
+        function copyText(elementId, button) {
+            const text = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                button.textContent = "Copied";
+                button.style.background = "#4CAF50"; // Change the button color to green
+                setTimeout(() => {
+                    button.textContent = "Copy";
+                    button.style.background = "#6200ea"; // Reset the button color
+                }, 2000); // Reset after 2 seconds
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        }
+
+        function goToNextPage() {
+            window.location.href = "https://www.example.com"; // Replace with the URL of the next page
+        }
+    </script>
+</body>
+</html>
