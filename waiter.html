@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waiter Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #333;
+        }
+        .section {
+            background: #fff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+        }
+        .input-group {
+            margin: 10px 0;
+        }
+        .input-group label {
+            margin-right: 10px;
+        }
+        .buttons {
+            margin-top: 20px;
+        }
+        .buttons button {
+            background: #03dac6;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .buttons button:hover {
+            background: #018786;
+        }
+    </style>
+</head>
+<body>
+    <h1>Waiter Page</h1>
+    
+    <div class="section" id="waiter-section">
+        <h2>Enter Dish Details</h2>
+        <div class="input-group">
+            <label for="table-number">Table Number:</label>
+            <select id="table-number">
+                <option value="1">Table 1</option>
+                <option value="2">Table 2</option>
+                <option value="3">Table 3</option>
+                <option value="4">Table 4</option>
+                <option value="5">Table 5</option>
+                <option value="6">Table 6</option>
+                <option value="7">Table 7</option>
+                <option value="8">Table 8</option>
+                <option value="9">Table 9</option>
+                <option value="10">Table 10</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="dish-name">Dish Name:</label>
+            <input type="text" id="dish-name">
+        </div>
+        <div class="buttons">
+            <button onclick="submitDish()">Submit Dish</button>
+        </div>
+    </div>
+
+    <script>
+        function submitDish() {
+            const tableNumber = document.getElementById('table-number').value;
+            const dishName = document.getElementById('dish-name').value;
+            if (dishName) {
+                sessionStorage.setItem(`dishName${tableNumber}`, dishName);
+                alert("Dish submitted! Please inform the customer to scan the barcode.");
+            } else {
+                alert("Please enter a dish name.");
+            }
+        }
+    </script>
+</body>
+</html>

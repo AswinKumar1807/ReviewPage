@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Review Page</title>
+    <title>Customer Page</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -64,30 +64,60 @@
     </style>
 </head>
 <body>
-    <h1>Review Page</h1>
+    <h1>Customer Page</h1>
+    
     <div class="sentence">
-        <p id="sentence1">Loading review...</p>
-        <button onclick="generateReview('sentence1')">Generate Review</button>
-        <button onclick="copyText('sentence1', this)">Copy</button>
+        <p id="review" class="review-text">Loading review...</p>
+        <button onclick="generateReview()">Regenerate</button>
+        <button id="copyButton" onclick="copyReview()">Copy</button>
     </div>
-    <!-- Add more sentences as needed -->
 
     <div class="buttons">
         <button onclick="goToNextPage()">Next</button>
     </div>
 
     <script>
-        async function generateReview(elementId) {
+        async function fetchApiKey() {
+            try {
+                const response = await fetch('data.json');
+                const data = await response.json();
+                return data.apiKey;
+            } catch (error) {
+                console.error('Error fetching API key:', error);
+                return null;
+            }
+        }
+
+        async function generateReview() {
+            const apiKey = await fetchApiKey();
+            if (!apiKey) {
+                console.error('API key not found.');
+                return;
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const tableNumber = urlParams.get('table');
+            if (!tableNumber) {
+                document.getElementById('review').textContent = "No table number provided.";
+                return;
+            }
+
+            const dishName = sessionStorage.getItem(`dishName${tableNumber}`);
+            if (!dishName) {
+                document.getElementById('review').textContent = "No dish information available.";
+                return;
+            }
+
             try {
                 const response = await fetch('https://api.openai.com/v1/chat/completions', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer sk-proj-NbQf2Z9HHGrXvwVNYlrtT3BlbkFJ1F7TmAGwpm4jsLQazPwB`
+                        'Authorization': `Bearer ${apiKey}`
                     },
                     body: JSON.stringify({
                         model: "gpt-3.5-turbo",
-                        messages: [{ role: "user", content: "Generate a review for a restaurant." }],
+                        messages: [{ role: "user", content: `Generate a review for the dish: ${dishName} for restaurent118.` }],
                         max_tokens: 100,
                         temperature: 0.7
                     })
@@ -96,29 +126,35 @@
                 const data = await response.json();
                 if (!response.ok) {
                     console.error(`Error: ${response.status} - ${data.error.message}`);
-                    document.getElementById(elementId).textContent = `Failed to generate review: ${data.error.message}`;
+                    document.getElementById('review').textContent = `Failed to generate review: ${data.error.message}`;
                     return;
                 }
 
-                console.log(data); // Log the response for debugging
-                document.getElementById(elementId).textContent = data.choices[0].message.content.trim();
+                const reviewContent = data.choices[0].message.content.trim();
+                if (reviewContent) {
+                    document.getElementById('review').textContent = reviewContent;
+                } else {
+                    document.getElementById('review').textContent = "No review available for this dish.";
+                }
             } catch (error) {
                 console.error('Error:', error);
-                document.getElementById(elementId).textContent = "Failed to generate review. Please try again.";
+                document.getElementById('review').textContent = "Failed to generate review. Please try again.";
             }
         }
 
-        function copyText(elementId, button) {
-            const text = document.getElementById(elementId).textContent;
-            navigator.clipboard.writeText(text).then(() => {
-                button.textContent = "Copied";
-                button.style.background = "#4CAF50"; // Change the button color to green
+        function copyReview() {
+            const reviewText = document.getElementById('review').textContent;
+            navigator.clipboard.writeText(reviewText).then(() => {
+                const copyButton = document.getElementById('copyButton');
+                copyButton.textContent = "Copied";
+                copyButton.style.background = "#4CAF50"; // Change the button color to green
                 setTimeout(() => {
-                    button.textContent = "Copy";
-                    button.style.background = "#6200ea"; // Reset the button color
+                    copyButton.textContent = "Copy";
+                    copyButton.style.background = "#6200ea"; // Reset the button color
                 }, 2000); // Reset after 2 seconds
-            }).catch(err => {
-                console.error('Failed to copy text: ', err);
+            }).catch(error => {
+                console.error('Error:', error);
+                alert("Failed to copy review. Please try again.");
             });
         }
 
@@ -126,9 +162,7 @@
             window.location.href = "https://search.google.com/local/writereview?placeid=ChIJJQtHaYAXrjsRgmsCioLrhxE"; // Replace with the URL of the next page
         }
 
-        window.onload = function() {
-            generateReview('sentence1');
-        };
+        window.onload = generateReview;
     </script>
 </body>
 </html>
