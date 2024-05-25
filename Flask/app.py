@@ -41,15 +41,20 @@ def customer(table_number):
         return jsonify({'success': False, 'message': f'Failed to fetch dish review: {str(e)}'}), 500
 
 
+# Update the backend logic to handle submission of waiter details
 @app.route('/submit_dish', methods=['POST'])
 def submit_dish():
     table_number = request.form.get('table_number')
     dish_name = request.form.get('dish_name')
+    waiter_name = request.form.get('waiter_name')
+    working_shift = request.form.get('working_shift')
 
-    if table_number and dish_name:
+    if table_number and dish_name and waiter_name and working_shift:
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
+
+            # Check if the table already exists in the Admin table
             query = "SELECT * FROM Admin WHERE `Table` = %s"
             cursor.execute(query, (table_number,))
             result = cursor.fetchone()
@@ -63,6 +68,10 @@ def submit_dish():
                 insert_query = "INSERT INTO Admin (`Table`, Dish) VALUES (%s, %s)"
                 cursor.execute(insert_query, (table_number, dish_name))
 
+            # Insert waiter details into WaiterDetails table
+            waiter_query = "INSERT INTO WaiterDetails (waiter_name, working_shift, table_served, dish_served) VALUES (%s, %s, %s, %s)"
+            cursor.execute(waiter_query, (waiter_name, working_shift, table_number, dish_name))
+
             conn.commit()
             cursor.close()
             conn.close()
@@ -71,7 +80,9 @@ def submit_dish():
             print(f'Error during database operation: {str(e)}')  # Log the error
             return jsonify({'success': False, 'message': f'Failed to submit dish: {str(e)}'}), 500
     else:
-        return jsonify({'success': False, 'message': 'Invalid input: Table number or dish name is missing'}), 400
+        return jsonify({'success': False, 'message': 'Invalid input: Table number, dish name, waiter name, or working shift is missing'}), 400
+
+
 
 
 
