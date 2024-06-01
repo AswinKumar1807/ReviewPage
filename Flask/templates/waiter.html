@@ -42,6 +42,9 @@
             border-radius: 4px;
             font-size: 16px;
         }
+        .buttons {
+            margin-top: 20px;
+        }
         .buttons button {
             background: #03dac6;
             color: #fff;
@@ -58,6 +61,8 @@
 </head>
 <body>
     <h1>Waiter Page</h1>
+    <!-- Display the username -->
+    <p>Welcome, {{ username }}</p>
     
     <div class="section" id="waiter-section">
         <h2>Enter Dish Details</h2>
@@ -81,10 +86,6 @@
             <input type="text" id="dish-name">
         </div>
         <div class="input-group">
-            <label for="waiter-name">Waiter Name</label>
-            <input type="text" id="waiter-name">
-        </div>
-        <div class="input-group">
             <label for="working-shift">Working Shift</label>
             <select id="working-shift">
                 <option value="A">A</option>
@@ -101,7 +102,7 @@
         async function submitDish() {
             const tableNumber = document.getElementById('table-number').value;
             const dishName = document.getElementById('dish-name').value;
-            const waiterName = document.getElementById('waiter-name').value;
+            const waiterName = "{{ username }}";
             const workingShift = document.getElementById('working-shift').value;
 
             if (dishName && waiterName) {
@@ -121,6 +122,7 @@
                     alert(result.message);
 
                     sessionStorage.setItem(`dishName${tableNumber}`, dishName);
+                    document.getElementById('dish-name').value = '';
                 } catch (error) {
                     console.error('Error:', error);
                     alert('Failed to submit dish. Please try again.');
